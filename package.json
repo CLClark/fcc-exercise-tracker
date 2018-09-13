@@ -18,7 +18,7 @@
 		"node": "6.9.1"
 	},
 	"repository": {
-		"url": "https://gomix.com/#!/project/welcome-project"
+		"url": "https://github.com/CLClark/fcc-exercise-tracker.git"
 	},
 	"license": "MIT",
 	"keywords": [
