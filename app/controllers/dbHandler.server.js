@@ -4,6 +4,7 @@ var config = process.env.MLAB_URI;
 var Exercise = require('../models/exercise.js');
 var Users = require('../models/users.js');
 var mongoose = require('mongoose');
+var dateFormat = require('dateformat');
 
 function DbHandler () {
 
@@ -57,12 +58,23 @@ function DbHandler () {
 		//accepts userId(_id), description, duration, and optionally date
 		//returns user object with also with the exercise fields added
 		
+		//TODO: change to find by user id not username
+
 		var newEx = new Exercise();
 		let uId = req.body.userId;//_id
 		let descr = req.body.description | 'none';
 		let dura = req.body.duration;
-		let date = null; // yyyy-mm-dd
+		let nowDate = new Date();		
+		let date = req.body.date || 
+			dateFormat(nowDate, "yyyy-mm-dd"); // yyyy-mm-dd
 
+		let exDate =  new Date(
+			parseInt(date.slice(0, 4)),
+			parseInt(date.slice(5, 7)),
+			parseInt(date.slice(8, 10))
+		); // yyyy-mm-dd
+
+		
 		newEx.description = descr;
 		newEx.duration = dura;
 		newEx.date = date;
@@ -89,25 +101,25 @@ function DbHandler () {
 		//optionally returns (part of the log) based on parameters
 
 		var singleUser = new Users();
-		let uId = req.body.userId;//_id
+		let uId = req.query.userId;//_id
 
-		let limit = req.body.limit || -1;
-		let fromString = String(req.query.from);
-		let todString = String(req.query.to);
+		let limit = parseInt(req.query.limit) || -1;
+		let fromString = req.query.from || "0001-01-01";
+		let todString = req.query.to || "9999-12-31";
 
 		let from =  new Date(
-			fromString.slice(0,4),
-			fromString.slice(5,7),
-			fromString.slice(8,10)
-			) || null; // yyyy-mm-dd
+			parseInt(fromString.slice(0, 4)),
+			parseInt(fromString.slice(5, 7)),
+			parseInt(fromString.slice(8, 10))
+		); // yyyy-mm-dd
 
 		console.log("from is " + from);
 
 		let to = new Date(
-			todString.slice(0, 4),
-			todString.slice(5, 7),
-			todString.slice(8, 10)
-		) || null; // yyyy-mm-dd
+			parseInt(todString.slice(0, 4)),
+			parseInt(todString.slice(5, 7)),
+			parseInt(todString.slice(8, 10))
+		); // yyyy-mm-dd
 		console.log("to is: " + to);
 
 		//TODO: optionally limit query before executing (date and a count)
@@ -133,8 +145,8 @@ function DbHandler () {
 		}else{
 			//ignore limit		
 			userQuery
-			.where('exercises.date').lt(to)
-			.where('exercises.date').gt(from)
+			.lt('exercises.date', to)
+			.gt('exercises.date',from)
 			.exec(function (err, usersBack) {
 				if (err){
 					console.log(err);

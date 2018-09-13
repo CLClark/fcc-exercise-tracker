@@ -30,9 +30,9 @@
             <h3>Find User's log</h3>
             <p><code>GET /api/exercise/log</code></p>
             <input id="uid" type="text" name="userId" placeholder="userId*">            
-            <input id="limit" type="text" name="limit" placeholder="limit*">
-            <input id="fdate" type="text" name="from" placeholder="date (yyyy-mm-dd)">
-            <input id="tdate" type="text" name="to" placeholder="date (yyyy-mm-dd)">
+            <input id="limit" type="text" name="limit" placeholder="limit">
+            <input id="fdate" type="text" name="from" placeholder="min date (yyyy-mm-dd)">
+            <input id="tdate" type="text" name="to" placeholder="max date (yyyy-mm-dd)">
             <input type="submit" value="Submit">
           </form>
           <p><strong>GET users's exercise log: </strong><code>GET /api/exercise/log?{userId}[&amp;from][&amp;to][&amp;limit]</code></p>
