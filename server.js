@@ -18,6 +18,14 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
+/* *************** */
+
+var routes = require('./app/routes/index.js');
+app.use('/controllers', express.static(process.cwd() + '/app/controllers'));
+routes(app);
+
+
+/* *************** */
 
 // Not found middleware
 app.use((req, res, next) => {
