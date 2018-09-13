@@ -10,7 +10,7 @@ var Exercise = new Schema({
 	exerId: String,	
 	description: String,
 	duration: String,	
-	date: String,
+	date: Date,
 	active: Boolean
 
 });

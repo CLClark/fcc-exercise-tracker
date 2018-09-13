@@ -90,16 +90,61 @@ function DbHandler () {
 
 		var singleUser = new Users();
 		let uId = req.body.userId;//_id
-		
-		let limit = req.body.limit | 'none';
-		let from = null; // yyyy-mm-dd
-		let to = null; //
+
+		let limit = req.body.limit || -1;
+		let fromString = String(req.query.from);
+		let todString = String(req.query.to);
+
+		let from =  new Date(
+			fromString.slice(0,4),
+			fromString.slice(5,7),
+			fromString.slice(8,10)
+			) || null; // yyyy-mm-dd
+
+		console.log("from is " + from);
+
+		let to = new Date(
+			todString.slice(0, 4),
+			todString.slice(5, 7),
+			todString.slice(8, 10)
+		) || null; // yyyy-mm-dd
+		console.log("to is: " + to);
 
 		//TODO: optionally limit query before executing (date and a count)
 
-		var userQuery = Users.find().where('_id').equals('uId');
-		userQuery.where();
-		userQuery.where();
+		var rawId = mongoose.Types.ObjectId(uId);
+		var userQuery = Users.find().where('_id').equals(rawId);		
+
+		if(limit > -1){
+			//include user's limit
+			userQuery.slice('exercises', limit)
+			.where('exercises.date').lt(to)
+			.where('exercises.date').gt(from)
+			.exec(function (err, usersBack) {
+				if (err){
+					console.log(err);
+					res.sendStatus(500);
+				}else{
+					console.log(usersBack);
+					res.json(usersBack);
+				}
+			});
+
+		}else{
+			//ignore limit		
+			userQuery
+			.where('exercises.date').lt(to)
+			.where('exercises.date').gt(from)
+			.exec(function (err, usersBack) {
+				if (err){
+					console.log(err);
+					res.sendStatus(500);
+				}else{
+					console.log(usersBack);
+					res.json(usersBack);
+				}
+			});
+		}
 
 
 	}//getLog
