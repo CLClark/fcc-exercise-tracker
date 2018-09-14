@@ -62,7 +62,7 @@ function DbHandler () {
 
 		var newEx = new Exercise();
 		let uId = req.body.userId;//_id
-		let descr = req.body.description | 'none';
+		let descr = req.body.description || 'none';
 		let dura = req.body.duration;
 		let nowDate = new Date();		
 		let date = req.body.date || 
@@ -73,21 +73,20 @@ function DbHandler () {
 			parseInt(date.slice(5, 7)),
 			parseInt(date.slice(8, 10))
 		); // yyyy-mm-dd
-
 		
 		newEx.description = descr;
 		newEx.duration = dura;
-		newEx.date = date;
+		newEx.date = exDate;
 		newEx.userId = uId;
 		newEx.active = true;
 		
-		Users.findByIdAndUpdate(uId, { $push: { exercises: newEx} },(err, docBack) => {
+		Users.findByIdAndUpdate(uId, { $push: { exercises: newEx} }, {new: true}, (err, docBack) => {
 			if(err){
 				console.log(err);
 				res.sendStatus(500);
 			}else{
 				console.log("no err");
-				console.log(docBack);				
+				console.log(JSON.stringify(docBack));				
 				res.json(docBack);
 			}
 		});
@@ -137,8 +136,17 @@ function DbHandler () {
 					console.log(err);
 					res.sendStatus(500);
 				}else{
-					console.log(usersBack);
-					res.json(usersBack);
+					console.log(usersBack);									
+					let reformed = {};
+					//add user details to response object
+					reformed.username = usersBack[0].username;
+					reformed["_id"] = usersBack[0]["_id"];
+					//add exercise log, count to response object
+					let exArray = Array.from(usersBack[0].exercises);
+					reformed.count = exArray.length;
+					reformed.log = usersBack[0].exercises;					
+					//send the object to user
+					res.json(reformed);
 				}
 			});
 
@@ -153,7 +161,16 @@ function DbHandler () {
 					res.sendStatus(500);
 				}else{
 					console.log(usersBack);
-					res.json(usersBack);
+					let reformed = {};
+					//add user details to response object
+					reformed.username = usersBack[0].username;
+					reformed["_id"] = usersBack[0]["_id"];
+					//add exercise log, count to response object
+					let exArray = Array.from(usersBack[0].exercises);
+					reformed.count = exArray.length;
+					reformed.log = usersBack[0].exercises;					
+					//send the object to user
+					res.json(reformed);
 				}
 			});
 		}
